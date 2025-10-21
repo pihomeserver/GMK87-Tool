@@ -41,7 +41,7 @@ def updateConfigFrame(device):
     # 0x30 = Full configration frame
     data[0x04] = 0x30
 
-    # 0x09 = Underglow effect
+    # 0x09 = LED underglow effect
     # 0x00 = off
     # 0x01 = horizontal dimming wave
     # 0x02 = horizontal pulse wave
@@ -74,7 +74,7 @@ def updateConfigFrame(device):
     # 0x09 = slow
     data[0x0b] = 0x03
 
-    # 0x0c = Wave orientation
+    # 0x0c = LED underglow orientation
     # 0x00 = Left to right
     # 0x01 = Right to left
     data[0x0c] = 0x00
@@ -117,7 +117,7 @@ def updateConfigFrame(device):
     data[0x22] = 0x00 # ??
     data[0x23] = 0x00 # ??
 
-    # 0x24 = Big led linking mode
+    # 0x24 = Big led mode
     # 0x00 = One color blinking. Color defined in 0x28
     # 0x01 = One pulse off and color rainbow
     # 0x02 = One color blinking. . Color defined in 0x28
@@ -125,7 +125,7 @@ def updateConfigFrame(device):
     # 0x04 = Fixed color. Color defined in 0x28
     data[0x24] = 0x00
 
-    # 0x25 = Big led mode saturation
+    # 0x25 = Big led saturation
     # 0x00 = off
     # 0x09 = maximum
     data[0x25] = 0x00
@@ -133,7 +133,7 @@ def updateConfigFrame(device):
     # 0x26 = ??
     data[0x26] = 0x00
 
-    # 0x27 = Big led color
+    # 0x27 = Big led color type
     # 0x00 = Hue mode only
     # 0x01 = Rainbow color mode
     data[0x27] = 0x00
