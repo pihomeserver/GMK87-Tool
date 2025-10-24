@@ -19,7 +19,7 @@ The script can update the following parameters
 * Date
 
 ## Warning
-It has been tested only under Arch. For windows, please look at https://github.com/ikkentim/gmk87-usb-reverse*
+It has been tested only under Arch. For windows, please look at https://github.com/ikkentim/gmk87-usb-reverse
 
 ## To do
 * Find saturation parameter

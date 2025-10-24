@@ -30,6 +30,7 @@ def to_hex_num(num: int) -> int:
     return low + high * 16
 
 def updateConfigFrame(device):
+    print("Building configuration frame")
     now = datetime.now()
 
     data = bytearray(64)
@@ -186,7 +187,9 @@ def updateConfigFrame(device):
     # Print exact data block send to the keyboard
     #print(''.join('\\x{:02x}'.format(letter) for letter in data))
 
+    print("Sending new configuration frame")
     send_data(device, data)
+    print("New configuration frame sent")
  
 def main():
     try:
