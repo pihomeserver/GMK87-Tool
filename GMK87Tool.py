@@ -1,36 +1,13 @@
 #!/usr/bin/env python3
 
-# https://docs.digi.com/resources/documentation/digidocs/90002386/os/python-hid-module-c.htm?TocPath=Applications%7C_____5
-
 import hid # from hidapi (not hid)
 import math
 import time
 from datetime import datetime
-import argparse
-
-GMK87_VENDOR_ID = 0x320f
-GMK87_PRODUCT_ID = 0x5055
-GMK87_USAGE = 146
-
-def send_data(device, data):
-    device.set_nonblocking(1)
-    device.write(bytes(data))
-
-def checksum(buf: bytes) -> int:
-    chk = 0
-    for v in buf:
-        chk += v
-    return chk
-
-def to_hex_num(num: int) -> int:
-    if num >= 100 or num < 0:
-        raise ValueError("num is out of range (0-99)")
-    low = num % 10
-    high = num // 10
-    return low + high * 16
+import utils
 
 def updateConfigFrame(device):
-    print("Building configuration frame")
+    if utils.debugMode: print("Building configuration frame")
     now = datetime.now()
 
     data = bytearray(64)
@@ -159,16 +136,18 @@ def updateConfigFrame(device):
     data[0x29] = 0x00
     
     # 0x2a = Frame count in image 1
+    # 0x00 = Disable image (could not be displayed)
+    # 0x?? = Number of frames of the images. Can be used to reactivate the image
     data[0x2a] = 0x30
 
     # 0x2b ... 0x31 = define time amd date
-    data[0x2b] = to_hex_num(now.second)
-    data[0x2c] = to_hex_num(now.minute)
-    data[0x2d] = to_hex_num(now.hour)
-    data[0x2e] = to_hex_num(now.weekday())
-    data[0x2f] = to_hex_num(now.day)
-    data[0x30] = to_hex_num(now.month)
-    data[0x31] = to_hex_num(int(math.fmod(now.year, 100)))
+    data[0x2b] = utils.to_hex_num(now.second)
+    data[0x2c] = utils.to_hex_num(now.minute)
+    data[0x2d] = utils.to_hex_num(now.hour)
+    data[0x2e] = utils.to_hex_num(now.weekday())
+    data[0x2f] = utils.to_hex_num(now.day)
+    data[0x30] = utils.to_hex_num(now.month)
+    data[0x31] = utils.to_hex_num(int(math.fmod(now.year, 100)))
 
     # frameDuration = 1000 # in ms
     # frameDurationLsb = frameDuration & 0xff
@@ -180,33 +159,102 @@ def updateConfigFrame(device):
     data[0x36] = 0x00
 
     # Checksum of the frame
-    chk = checksum(data[3:])
+    chk = utils.checksum(data[3:])
     data[0x01] = chk & 0xff # checksum LSB
     data[0x02] = (chk >> 8) & 0xff # checksum MSB
 
     # Print exact data block send to the keyboard
-    #print(''.join('\\x{:02x}'.format(letter) for letter in data))
+    # utils.printRawData(data)
 
-    print("Sending new configuration frame")
-    send_data(device, data)
-    print("New configuration frame sent")
- 
+    if utils.debugMode: print("Sending new configuration frame")
+    utils.send_data(device, data)
+    if utils.debugMode: print("New configuration frame sent")
+
+class Keyboard():
+    def __init__(self):
+        self.kbVIAProtocol = 0
+        self.kbLayers = -1
+        self.name: ""
+        self.manufacturer = ""
+        self.vendorId = ""
+        self.productId = ""
+        self.path = ""
+
+currentKeyboard = Keyboard()
+
+def getKeyboardConfiguration(device):
+    currentKeyboard.name = device.get_product_string()
+    currentKeyboard.manufacturer = device.get_manufacturer_string()
+    currentKeyboard.vendorId = utils.GMK87_VENDOR_ID
+    currentKeyboard.productId = utils.GMK87_PRODUCT_ID
+    currentKeyboard.usageId = utils.GMK87_USAGE_CHECK
+
+    getViaProtocolVersion(device)
+    if currentKeyboard.kbVIAProtocol > 0:
+        getLayerCount(device)
+    if utils.debugMode: 
+        print("\nKeyboard configuration:\n")
+        print(" * Name: ", currentKeyboard.name)
+        print(" * Manufacturer: ", currentKeyboard.manufacturer)
+        print(" * Vendor ID: ", currentKeyboard.vendorId)
+        print(" * Product ID: ", currentKeyboard.productId)
+        print(" * Usage ID: ", currentKeyboard.usageId)
+        print(" * Path: ", currentKeyboard.path)
+        print(" * VIA Protocol: ", currentKeyboard.kbVIAProtocol)
+        print(" * Layers: ", currentKeyboard.kbLayers)
+
+def getBacklightValue(device):
+    value = utils.sendCheckCommand(device, utils.CMD_LIGHTING_GET_VALUE, 0, [])
+
+def getLayerCount(device):
+    layers = utils.sendCheckCommand(device, utils.CMD_GET_KEYBOARD_LAYERS, 0, [])
+    if (len(layers) > 0):
+        currentKeyboard.kbLayers = layers[1]
+
+def getViaProtocolVersion(device):
+    protocolData = utils.sendCheckCommand(device, utils.CMD_GET_PROTOCOL_VERSION, utils.CMD_EMPTY_COMMAND, [])
+    if (len(protocolData) > 0):
+        currentKeyboard.kbVIAProtocol = protocolData[2]
 def main():
     try:
-        devices = hid.enumerate(GMK87_VENDOR_ID, GMK87_PRODUCT_ID)
-        deviceWithUsage = next((x for x in devices if x['usage'] == GMK87_USAGE), None)
+        devices = hid.enumerate(utils.GMK87_VENDOR_ID, utils.GMK87_PRODUCT_ID)
+        deviceWithUsage = next((x for x in devices if x['usage'] == utils.GMK87_USAGE_CHECK), None)
+        device = hid.device()
+        device.open_path(deviceWithUsage['path'])
+        
+        currentKeyboard.path = deviceWithUsage['path']
+
+        getKeyboardConfiguration(device)
+        
+        # r = utils.sendCheckCommand(device, \
+        #     utils.CMD_LIGHTING_SET_VALUE, \
+        #     utils.SUBCMD_SET_UNDERGLOW_BRIGHTNESS, \
+        #     [0x0f])
+        # print(r)
+
+        # r = utils.sendCheckCommand(device, \
+        #     utils.CMD_LIGHTING_SET_VALUE, \
+        #     utils.SUBCMD_SET_UNDERGLOW_MODE, \
+        #     [0x01])
+        # print(r)
+
+        # r = utils.sendCheckCommand(device, \
+        #     utils.CMD_LIGHTING_SET_VALUE, \
+        #     utils.SUBCMD_SET_UNDERGLOW_SPEED, \
+        #     [0x00])
+        # print(r)
+        
+        # For the full configuration frame, we have to use the device from another path
+        deviceWithUsage = next((x for x in devices if x['usage'] == utils.GMK87_USAGE_CONFIG), None)
         device = hid.device()
         device.open_path(deviceWithUsage['path'])
 
-        print("Device opened in path ", deviceWithUsage['path'])
-        print("Manufacturer: ",device.get_manufacturer_string())
-        print("Product: ",device.get_product_string())
         updateConfigFrame(device)
     except Exception as e:
         print(f"Error: {e}")
     finally:
         if 'device' in locals() and device :
-            print("Device closed")
+            if utils.debugMode: print("\nDevice closed")
             device.close()
 
 if __name__ == "__main__":

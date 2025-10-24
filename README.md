@@ -1,4 +1,4 @@
-Python script to update settings, time and clock of a GMK87 keyboard
+Python script to update settings, time and clock of a Zuoya GMK87 keyboard
 *Inspired from https://github.com/ikkentim/gmk87-usb-reverse*
 
 # Features
@@ -14,7 +14,7 @@ The script can update the following parameters
 * Big led saturation
 * Big led color type
 * Big led color
-* Screen image to display
+* Selection of the screen image to display (**no upload is possible for now**)
 * Time
 * Date
 
