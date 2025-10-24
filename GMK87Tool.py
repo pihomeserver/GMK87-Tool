@@ -67,7 +67,7 @@ def updateConfigFrame(device):
     # 0x0a = LED backlight brightness
     # 0x00 = off
     # 0x09 = maximum
-    data[0x0a] = 0x09
+    data[0x0a] = 0x02
 
     # 0x0b = LED backlight speed
     # 0x00 = fast
