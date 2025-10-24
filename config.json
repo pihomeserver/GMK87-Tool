@@ -1,0 +1,27 @@
+{
+    "config": {
+        "underglow_effect": 1,
+        "underglow_brightness": 2,
+        "underglow_speed": 2,
+        "underglow_orientation": 0,
+        "underglow_rainbow": 1,
+        "underglow_hue": {
+            "red": 255,
+            "green": 255,
+            "blue": 255
+        },
+        "winlock": 0,
+        "led_mode": 0,
+        "led_saturation": 0,
+        "led_rainbow": 0,
+        "led_color": 0,
+        "show_image": 0,
+        "image1": {
+            "frames": 45
+        },
+        "image2": {
+            "frames": 0
+        }
+    },
+    "debug": true
+}

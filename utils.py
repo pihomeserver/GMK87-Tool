@@ -1,6 +1,8 @@
 import time
+import json
+from types import SimpleNamespace
 
-debugMode = True
+debugMode = False
 
 GMK87_VENDOR_ID = 0x320f
 GMK87_PRODUCT_ID = 0x5055
@@ -11,14 +13,12 @@ CMD_EMPTY_COMMAND                   = 0x00
 CMD_GET_PROTOCOL_VERSION            = 0x01
 CMD_GET_KEYBOARD_VALUE              = 0x02
 CMD_SET_KEYBOARD_VALUE              = 0x03
-# CMD_VIA_DYNAMIC_KEYMAP_GET_KEYCODE  = 0x04
-# CMD_VIA_DYNAMIC_KEYMAP_SET_KEYCODE  = 0x05
-# CMD_VIA_DYNAMIC_KEYMAP_RESET        = 0x06
+CMD_VIA_DYNAMIC_KEYMAP_GET_KEYCODE  = 0x04
+CMD_VIA_DYNAMIC_KEYMAP_SET_KEYCODE  = 0x05
+CMD_VIA_DYNAMIC_KEYMAP_RESET        = 0x06
 CMD_LIGHTING_SET_VALUE              = 0x07
 CMD_LIGHTING_GET_VALUE              = 0x08
 CMD_GET_KEYBOARD_LAYERS             = 0x11
-#CMD_VIAL_COMMAND                    = 0xFE
-
 
 SUBCMD_SET_UNDERGLOW_BRIGHTNESS     = 0x80
 SUBCMD_SET_UNDERGLOW_MODE           = 0x81
@@ -70,3 +70,12 @@ def sendCheckCommand(device, cmd, subcmd, subDataSet = []) -> bytearray:
         else:
             break
     return []
+
+def loadConfigurationFromFile(filename) :
+    global debugMode
+    with open(filename) as f:
+        config = json.load(f)
+        debugMode = config.get('debug', False)
+        if debugMode: print("\nConfiguration loaded")
+
+        return(config)    
