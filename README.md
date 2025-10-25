@@ -19,11 +19,10 @@ The script can update the following parameters
 * Date
 
 ## Warning
-It has been tested only under Arch. For windows, please look at https://github.com/ikkentim/gmk87-usb-reverse
+It has been tested only under Arch. For Windows, please look at https://github.com/ikkentim/gmk87-usb-reverse
 
 ## To do
 * Find saturation parameter
-* Use parameter files instead hardcoded values
 * Find how to retrieve settings from the keyboard to update only specific settings instead of all
 * Upload images feature
 
@@ -33,17 +32,15 @@ On Arch
 ```
 pacman -S python-hidapi
 ```
-Then download the `GMK87Tool.py` script
+Then clone the repo and run the `GMK87Tool.py` script with the configuration file as parameter
 **Not tested with python hid**
 
 
 # Execution
 
-For now you have to update manually values in the script following comments. Then you can run the script
 ```
-sudo python GMK87Tool.py
+sudo python GMK87Tool.py -c config.json
 ```
-
 
 ## Why sudo is needed
 The script has to write to the device block. By default (at least in Arch), devices are owned by root
