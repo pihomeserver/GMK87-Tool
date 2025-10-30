@@ -4,11 +4,6 @@ from types import SimpleNamespace
 
 debugMode = False
 
-GMK87_VENDOR_ID = 0x320f
-GMK87_PRODUCT_ID = 0x5055
-GMK87_USAGE_CONFIG = 146
-GMK87_USAGE_CHECK = 97
-
 CMD_EMPTY_COMMAND                   = 0x00
 CMD_GET_PROTOCOL_VERSION            = 0x01
 CMD_GET_KEYBOARD_VALUE              = 0x02

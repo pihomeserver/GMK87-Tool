@@ -32,7 +32,7 @@ I also use Python 3.13.7. No guarantee that other version will work.
 # Install
 
 On Arch
-```
+```bash
 pacman -S python-hidapi
 ```
 Then clone the repo and run the `GMK87Tool.py` script with the configuration file as parameter
@@ -40,11 +40,27 @@ Then clone the repo and run the `GMK87Tool.py` script with the configuration fil
 
 
 # Execution
+## Create your configuration
+Use the Python script content to define your own values and configuration (I will create a more usable documentation soon)
+Settings for a Zuayo GMK87 are :
+```json
+    "vendor_id": "12815",
+    "product_id": "20565",
+    "usage_config": 146,
+    "usage_check": 97
+```
 
+## Apply your configuration
 ```
 sudo python GMK87Tool.py -c config.json
 ```
+## Other usage
+You can use the script to light your keyboard when a notification raise. The following command turns the keyboard lights to red and back to current configuration after 5 secondes
+```
+python GMK87Tool.py -c config-notification.json && sleep 5 && python GMK87Tool.py -c config.json
+```
 
+# FAQ
 ## Why sudo is needed
 The script has to write to the device block. By default (at least in Arch), devices are owned by root
 

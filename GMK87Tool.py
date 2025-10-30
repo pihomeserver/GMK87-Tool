@@ -183,12 +183,12 @@ def updateConfigFrame(device, config):
     utils.send_data(device, data)
     if utils.debugMode: print("New configuration frame sent")
 
-def getKeyboardConfiguration(device):
+def getKeyboardConfiguration(device, config):
     currentKeyboard.name = device.get_product_string()
     currentKeyboard.manufacturer = device.get_manufacturer_string()
-    currentKeyboard.vendorId = utils.GMK87_VENDOR_ID
-    currentKeyboard.productId = utils.GMK87_PRODUCT_ID
-    currentKeyboard.usageId = utils.GMK87_USAGE_CHECK
+    currentKeyboard.vendorId = config.get('keyboard').get('vendor_id')
+    currentKeyboard.productId = config.get('keyboard').get('product_id')
+    currentKeyboard.usageId = config.get('keyboard').get('usage_check')
 
     getViaProtocolVersion(device)
     if currentKeyboard.kbVIAProtocol > 0:
@@ -233,14 +233,15 @@ def main():
     args = parser.parse_args()
 
     try:
-        devices = hid.enumerate(utils.GMK87_VENDOR_ID, utils.GMK87_PRODUCT_ID)
-        deviceWithUsage = next((x for x in devices if x['usage'] == utils.GMK87_USAGE_CHECK), None)
+        config = utils.loadConfigurationFromFile(args.config)
+        devices = hid.enumerate(int(config.get('keyboard').get('vendor_id')), int(config.get('keyboard').get('product_id')))
+        deviceWithUsage = next((x for x in devices if x['usage'] == int(config.get('keyboard').get('usage_check'))), None)
         device = hid.device()
         device.open_path(deviceWithUsage['path'])
         
         currentKeyboard.path = deviceWithUsage['path']
 
-        getKeyboardConfiguration(device)
+        getKeyboardConfiguration(device, config)
 
         # r = utils.sendCheckCommand(device, \
         #     0x08, \
@@ -255,10 +256,9 @@ def main():
         # print(r)
 
         # For the full configuration frame, we have to use the device from another path
-        deviceWithUsage = next((x for x in devices if x['usage'] == utils.GMK87_USAGE_CONFIG), None)
+        deviceWithUsage = next((x for x in devices if x['usage'] == int(config.get('keyboard').get('usage_config'))), None)
         device = hid.device()
         device.open_path(deviceWithUsage['path'])
-        config = utils.loadConfigurationFromFile(args.config)
         updateConfigFrame(device, config)
     except Exception as e:
         print(f"Error: {e}")
