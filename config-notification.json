@@ -1,4 +1,10 @@
 {
+    "keyboard": {
+        "vendor_id": "12815",
+        "product_id": "20565",
+        "usage_config": 146,
+        "usage_check": 97
+    },
     "config": {
         "underglow_effect": 6,
         "underglow_brightness": 29,

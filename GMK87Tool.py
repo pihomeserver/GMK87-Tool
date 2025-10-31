@@ -225,7 +225,7 @@ def validate_file(filename):
 def main():
     parser = argparse.ArgumentParser(   
                     prog='GMK87Tool',
-                    description='Update the settings of a Zuoya GMK87 keyboard',
+                    description='Update the lightning settings of a RGB keyboard',
                     epilog='Please visit https://github.com/pihomeserver/GMK87-Tool for help and suggestions')
     
     parser.add_argument('-c', '--config', type=validate_file, help='Path to the JSON configuration file', required=True)
@@ -244,7 +244,7 @@ def main():
         getKeyboardConfiguration(device, config)
 
         # r = utils.sendCheckCommand(device, \
-        #     0x08, \
+        #     utils.CMD_LIGHTING_GET_VALUE, \
         #     utils.SUBCMD_SET_UNDERGLOW_BRIGHTNESS, \
         #     [])
         # print(r)

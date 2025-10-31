@@ -57,7 +57,7 @@ sudo python GMK87Tool.py -c config.json
 ## Other usage
 You can use the script to light your keyboard when a notification raise. The following command turns the keyboard lights to red and back to current configuration after 5 secondes
 ```
-python GMK87Tool.py -c config-notification.json && sleep 5 && python GMK87Tool.py -c config.json
+sudo bash -c 'python GMK87Tool.py -c config-notification.json && sleep 2 && python GMK87Tool.py -c config.json'
 ```
 
 # FAQ
